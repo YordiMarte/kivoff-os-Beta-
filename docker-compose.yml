@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kivoff
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: ./apps/api
+    container_name: kivoff_api
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./apps/api:/app
+    env_file:
+      - .env.shared
+    depends_on:
+      - db
+
+  ai-service:
+    build: ./apps/ai_service
+    container_name: ai_service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/ai_service:/app
+    env_file:
+      - .env.shared
+
+volumes:
+  pgdata:
+
